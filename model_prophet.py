@@ -1,6 +1,4 @@
 """
-model_prophet.py
-
 Prophet-Modell für die Prognose der täglichen logarithmierten Rendite r_{t+1}.
 
 In-Domain:
@@ -87,7 +85,6 @@ def train_prophet_for_ticker(ticker: str) -> Dict[str, Any]:
         "pred_val": pred_val,
         "pred_test": pred_test,
 
-        # Kernmetriken
         "mae_val": mae(y_val, pred_val),
         "rmse_val": rmse(y_val, pred_val),
         "mae_test": mae(y_test, pred_test),
@@ -108,7 +105,6 @@ def cross_domain_prophet(source: str, target: str) -> Dict[str, Any]:
           dort neu geschätzt
         - gibt In-Domain-Testfehler der Quelle (MAE/RMSE) mit zurück
     """
-    # In-Domain-Baseline auf Quelle
     src_res = train_prophet_for_ticker(source)
     mae_source_test = src_res["mae_test"]
     rmse_source_test = src_res["rmse_test"]
@@ -128,11 +124,9 @@ def cross_domain_prophet(source: str, target: str) -> Dict[str, Any]:
     model = build_prophet_model()
     model.fit(df_train)
 
-    # Val
     df_val = pd.DataFrame({"ds": val_t.index})
     pred_val = model.predict(df_val)["yhat"].values.astype("float32")
 
-    # Test
     df_test = pd.DataFrame({"ds": test_t.index})
     pred_test = model.predict(df_test)["yhat"].values.astype("float32")
 

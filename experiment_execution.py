@@ -13,10 +13,6 @@ Funktion:
     - speichert die Ergebnisse als CSV-Datei im Ordner 'results'
     - erzeugt pro Ticker genau EINEN Plot auf dem Test-Set, in dem
       alle Modellvorhersagen gemeinsam mit den echten Werten liegen.
-
-Hinweis:
-    - derzeit nur In-Domain-Szenario (Train & Test auf derselben Aktie)
-    - Cross-Asset-Experimente werden separat in experiment_cross_domain.py behandelt
 """
 
 from __future__ import annotations
@@ -27,26 +23,21 @@ from typing import List, Dict, Any
 import numpy as np
 import pandas as pd
 
-# Modelle importieren
 from model_arima import train_arima_for_ticker
 from model_prophet import train_prophet_for_ticker
 from model_ffnn import train_ffnn_for_ticker
 from model_lstm import train_lstm_for_ticker
 
-# Pipeline & Plot-Funktionen importieren
 from data_pipeline import prepare_dataset_for_ticker
 from plot_results import plot_test_set_all_models
 
-# Volatilitätsabhängige Fehleranalyse
 from metrics import rmse_by_vol_quantiles
 
-# (Optional) Seeds für Reproduzierbarkeit
 try:
     import tensorflow as tf
     np.random.seed(42)
     tf.random.set_seed(42)
 except ImportError:
-    # Wenn TensorFlow nicht installiert ist, ignorieren wir die Seed-Setzung
     pass
 
 
@@ -57,7 +48,6 @@ except ImportError:
 TICKERS: List[str] = ["IBM", "NVDA", "Nike"]
 MODELS: List[str] = ["ARIMA", "Prophet", "FFNN", "LSTM"]
 
-# Ordner für Ergebnisse (relativ zu dieser Datei)
 BASE_DIR = Path(__file__).resolve().parent
 RESULTS_DIR = BASE_DIR / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
@@ -65,7 +55,6 @@ RESULTS_DIR.mkdir(exist_ok=True)
 PLOTS_DIR = BASE_DIR / "plots"
 PLOTS_DIR.mkdir(exist_ok=True)
 
-# Anzahl der letzten Punkte, die im Plot gezeigt werden (None = alle)
 PLOT_ZOOM_LAST: int | None = 250
 
 
@@ -119,7 +108,6 @@ def run_all_experiments() -> pd.DataFrame:
         print(f"Starte Experimente für {ticker}")
         print(f"============================")
 
-        # Datenbasis für Plots und Volatilitätsinformation
         prep = prepare_dataset_for_ticker(ticker)
         test_df = prep["test_df"]
 
@@ -129,19 +117,15 @@ def run_all_experiments() -> pd.DataFrame:
             raise KeyError("Spalte 'roll_std_20' wird für die Volatilitätsanalyse benötigt.")
         vol_test_full = test_df["roll_std_20"].values.astype(float)
 
-        # Modell-Resultate für gemeinsamen Plot sammeln
         model_results_for_ticker: Dict[str, Dict[str, Any]] = {}
 
         for model_name in MODELS:
             print(f"\n>>> Modell: {model_name} | Ticker: {ticker}")
             try:
-                # Vollständiges Ergebnis (inkl. Vorhersagen)
                 res = run_model_for_ticker(model_name, ticker)
 
-                # Für den gemeinsamen Test-Plot merken
                 model_results_for_ticker[model_name] = res
 
-                # Basis-Metriken
                 mae_val = res.get("mae_val", np.nan)
                 rmse_val = res.get("rmse_val", np.nan)
                 mae_test = res.get("mae_test", np.nan)
@@ -189,7 +173,6 @@ def run_all_experiments() -> pd.DataFrame:
                 }
                 rows.append(row)
 
-                # Kurze Konsolen-Zusammenfassung
                 print(
                     f"Fertig: {model_name} auf {ticker} | "
                     f"MAE_test={row['mae_test']:.6f}, "
@@ -215,7 +198,6 @@ def run_all_experiments() -> pd.DataFrame:
                     "rmse_test_high_vol": np.nan,
                 })
 
-        # Nachdem alle Modelle für diesen Ticker trainiert wurden:
         # EIN gemeinsamer Test-Plot mit allen vier Modellvorhersagen
         try:
             if model_results_for_ticker:
@@ -233,7 +215,6 @@ def run_all_experiments() -> pd.DataFrame:
 
     df_results = pd.DataFrame(rows)
 
-    # Ergebnisse speichern
     out_file = RESULTS_DIR / "model_comparison_in_domain.csv"
     df_results.to_csv(out_file, index=False)
     print(f"\nErgebnisse gespeichert unter: {out_file}")

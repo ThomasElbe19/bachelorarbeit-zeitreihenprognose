@@ -16,11 +16,9 @@ def load_rolling_vol(path, ticker_name,
                      window=60):
     df = pd.read_csv(path)
 
-    # Datum parsen + nur kalendarisches Datum behalten
     df[date_col] = pd.to_datetime(df[date_col], errors="coerce", utc=True)
     df["Date_only"] = df[date_col].dt.date
 
-    # nach Datum sortieren & index setzen
     df = df.sort_values("Date_only").set_index("Date_only")
 
     # passende Preisspalte finden
@@ -40,31 +38,31 @@ def load_rolling_vol(path, ticker_name,
     rolling_vol.name = ticker_name
     return rolling_vol
 
-vol_ibm  = load_rolling_vol(path_ibm,  "IBM")
-vol_nvda = load_rolling_vol(path_nvda, "NVIDIA")
-vol_nike = load_rolling_vol(path_nike, "Nike")
+    vol_ibm  = load_rolling_vol(path_ibm,  "IBM")
+    vol_nvda = load_rolling_vol(path_nvda, "NVIDIA")
+    vol_nike = load_rolling_vol(path_nike, "Nike")
 
-# outer join über Kalendertage
-vol_df = pd.concat([vol_ibm, vol_nvda, vol_nike], axis=1, join="outer")
-vol_df.index = pd.to_datetime(vol_df.index)          # Index wieder als DatetimeIndex
-vol_df = vol_df.loc["1999-01-01":"2025-12-31"]
-vol_df = vol_df.dropna(how="all")
+    # outer join über Kalendertage
+    vol_df = pd.concat([vol_ibm, vol_nvda, vol_nike], axis=1, join="outer")
+    vol_df.index = pd.to_datetime(vol_df.index)          
+    vol_df = vol_df.loc["1999-01-01":"2025-12-31"]
+    vol_df = vol_df.dropna(how="all")
 
-print("Shape nach Aufbereitung:", vol_df.shape)
-print(vol_df.head())
+    print("Shape nach Aufbereitung:", vol_df.shape)
+    print(vol_df.head())
 
-plt.figure(figsize=(14, 6))
-plt.plot(vol_df.index, vol_df["IBM"],    label="IBM",    linewidth=1.2)
-plt.plot(vol_df.index, vol_df["NVIDIA"], label="NVIDIA", linewidth=1.2)
-plt.plot(vol_df.index, vol_df["Nike"],   label="Nike",   linewidth=1.2)
+    plt.figure(figsize=(14, 6))
+    plt.plot(vol_df.index, vol_df["IBM"],    label="IBM",    linewidth=1.2)
+    plt.plot(vol_df.index, vol_df["NVIDIA"], label="NVIDIA", linewidth=1.2)
+    plt.plot(vol_df.index, vol_df["Nike"],   label="Nike",   linewidth=1.2)
 
-plt.title("Rolling-Volatilität (60-Tage, annualisiert) von IBM, NVIDIA und Nike")
-plt.xlabel("Datum")
-plt.ylabel("Rolling-Volatilität (σ, annualisiert)")
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig(save_path, dpi=300)
-plt.close()
+    plt.title("Rolling-Volatilität (60-Tage, annualisiert) von IBM, NVIDIA und Nike")
+    plt.xlabel("Datum")
+    plt.ylabel("Rolling-Volatilität (σ, annualisiert)")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
 
-print(f"Plot erfolgreich gespeichert unter:\n{save_path}")
+    print(f"Plot erfolgreich gespeichert unter:\n{save_path}")

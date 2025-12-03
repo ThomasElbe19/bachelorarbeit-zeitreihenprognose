@@ -1,6 +1,4 @@
 """
-model_arima.py
-
 ARIMA-Modell für:
     - In-Domain-Prognosen (AutoARIMA)
     - Cross-Domain-Prognosen (Strukturtransfer)
@@ -116,13 +114,11 @@ def cross_domain_arima(source: str, target: str) -> Dict[str, Any]:
     mae_source_test = src_res["mae_test"]
     rmse_source_test = src_res["rmse_test"]
 
-    # Daten für Ziel
     prep_t = prepare_dataset_for_ticker(target)
     train_t = prep_t["train_df"]["log_ret"].values.astype("float32")
     val_t   = prep_t["val_df"]["log_ret"].values.astype("float32")
     test_t  = prep_t["test_df"]["log_ret"].values.astype("float32")
 
-    # Strukturtransfer: Ordnung aus Source
     best_order = src_res["best_cfg"]
 
     # Fit auf Target-Train → Val
@@ -142,7 +138,6 @@ def cross_domain_arima(source: str, target: str) -> Dict[str, Any]:
         "y_train": train_t,
         "best_cfg": best_order,
 
-        # In-Domain-Fehler der Quelle für dL_fcst
         "mae_source_test": mae_source_test,
         "rmse_source_test": rmse_source_test,
     }

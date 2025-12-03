@@ -1,6 +1,4 @@
 """
-plot_results.py
-
 Erstellt Plots für tatsächliche Daten (y_true) und Modellvorhersagen (y_pred).
 
 In-Domain:
@@ -80,7 +78,6 @@ def plot_test_set_all_models(
     Erstellt EINEN Plot pro Ticker für das Test-Set, in dem:
         - die echten Testwerte
         - die Test-Vorhersagen von ARIMA, Prophet, FFNN, LSTM
-
     gemeinsam dargestellt werden.
 
     Parameter:
@@ -114,13 +111,11 @@ def plot_test_set_all_models(
     if zoom_last is not None:
         n_points = min(n_points, zoom_last)
 
-    # Gemeinsamer Index & y_true auf die letzten n_points beschränken
     index = test_idx_full[-n_points:]
     y_true = y_true_full[-n_points:]
 
     plt.figure(figsize=(12, 5))
 
-    # Wahre Werte (Test-Set) – schwarze Linie, etwas dicker
     plt.plot(
         index,
         y_true,
@@ -129,7 +124,6 @@ def plot_test_set_all_models(
         color="black",
     )
 
-    # Farben und Reihenfolge der Modelle
     model_colors = {
         "ARIMA": "tab:blue",
         "Prophet": "tab:orange",
@@ -137,7 +131,6 @@ def plot_test_set_all_models(
         "LSTM": "tab:red",
     }
 
-    # Modelle als gestrichelte Linien hinzufügen
     for name in ["ARIMA", "Prophet", "FFNN", "LSTM"]:
         if name not in model_results:
             continue
@@ -151,8 +144,8 @@ def plot_test_set_all_models(
         plt.plot(
             index,
             preds,
-            linestyle="--",        # gestrichelt
-            linewidth=1.0,         # eher dünn
+            linestyle="--",        
+            linewidth=1.0,         
             label=name,
             color=model_colors.get(name, None),
         )
@@ -180,8 +173,6 @@ def plot_all_splits(
     zoom_last: int | None = None,
 ):
     """
-    (Alt / optional – wird in der aktuellen In-Domain-Pipeline nicht mehr verwendet)
-
     Erstellt Plots für:
         - Validation (y_val vs pred_val)
         - Test (y_test vs pred_test)
@@ -197,7 +188,6 @@ def plot_all_splits(
     val_idx = prep["val_df"].index
     test_idx = prep["test_df"].index
 
-    # VALIDATION
     plot_predictions(
         ticker=ticker,
         model_name=model_name,
@@ -209,7 +199,6 @@ def plot_all_splits(
         zoom_last=zoom_last,
     )
 
-    # TEST
     plot_predictions(
         ticker=ticker,
         model_name=model_name,

@@ -22,17 +22,14 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# Modelle
 from model_ffnn import train_ffnn_for_ticker, predict_ffnn
 from model_lstm import train_lstm_for_ticker, predict_lstm, build_lstm_sequences
 from model_arima import cross_domain_arima
 from model_prophet import cross_domain_prophet
 
-# Daten & Metriken
 from data_pipeline import prepare_dataset_for_ticker
 from metrics import mae, rmse, rmse_by_vol_quantiles
 
-# Plots
 from plot_results import plot_test_set_all_models
 
 TICKERS = ["IBM", "NVDA", "Nike"]
@@ -63,7 +60,6 @@ def cross_domain_ffnn(source: str, target: str):
     model = trained["model"]
     scaler = trained["scaler"]
 
-    # Baseline-Fehler der Quelle
     mae_source_test = trained["mae_test"]
     rmse_source_test = trained["rmse_test"]
 
@@ -157,12 +153,10 @@ def make_row(
 
     Cross-Domain-Metriken:
         - delta_mae, delta_rmse = |Loss_target - Loss_source|
-          (dL_fcst nach Deng et al.)
 
     Volatilitätsanalyse (nur Target-Test-Set):
         - rmse_test_low_vol, rmse_test_mid_vol, rmse_test_high_vol
     """
-    # Basis-Metriken
     mae_val = mae(res["y_val"], res["pred_val"])
     rmse_val = rmse(res["y_val"], res["pred_val"])
 

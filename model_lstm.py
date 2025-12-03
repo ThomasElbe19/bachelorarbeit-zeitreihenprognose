@@ -1,6 +1,4 @@
 """
-model_lstm.py
-
 LSTM-Modell für die Prognose der täglichen log-Rendite r_{t+1}.
 
 Features:
@@ -109,11 +107,10 @@ def train_lstm_for_ticker(
     results = {
         "ticker": ticker,
         "model": model,
-        "scaler": prep["scaler"],  # wichtig für Cross-Domain
+        "scaler": prep["scaler"],  
         "sequence_length": sequence_length,
         "history": history.history,
 
-        # Sequenzen und Zielwerte (für Analysen / Cross-Domain)
         "X_train_seq": X_train,
         "X_val_seq":   X_val,
         "X_test_seq":  X_test,
@@ -121,12 +118,10 @@ def train_lstm_for_ticker(
         "y_val":   y_val,
         "y_test":  y_test,
 
-        # Vorhersagen
         "pred_train": pred_train,
         "pred_val":   pred_val,
         "pred_test":  pred_test,
 
-        # Kernmetriken
         "mae_val":  mae(y_val, pred_val),
         "rmse_val": rmse(y_val, pred_val),
         "mae_test": mae(y_test, pred_test),

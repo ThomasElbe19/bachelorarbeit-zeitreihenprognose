@@ -296,11 +296,11 @@ def prepare_dataset_for_ticker(
 
 
 # =============================================================================
-# 6. Optionaler Selbsttest (kann bleiben oder entfernt werden)
+# 6. Selbsttest 
 # =============================================================================
 
 if __name__ == "__main__":
-    # Einfacher Testlauf für IBM, um zu prüfen, ob alles läuft
+    # Testlauf für IBM
     prep = prepare_dataset_for_ticker("IBM")
 
     print("IBM – Anzahl Beobachtungen:")

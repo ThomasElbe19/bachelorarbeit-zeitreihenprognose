@@ -1,5 +1,3 @@
-# metrics.py
-
 import numpy as np
 
 def mae(y_true, y_pred):
@@ -24,7 +22,6 @@ def rmse_by_vol_quantiles(
     RMSE getrennt nach drei Volatilitätsregimen (niedrig / mittel / hoch).
 
     - nutzt 33%- und 66%-Quantile der Volatilität
-    - filtert NaNs
     - wenn Quantile kollabieren oder Bins zu klein sind, wird
       auf den globalen RMSE zurückgefallen
     """
@@ -38,7 +35,6 @@ def rmse_by_vol_quantiles(
     y_pred = y_pred[mask]
     vol    = vol[mask]
 
-    # wenn nichts übrig bleibt → nur NaNs zurück
     if len(y_true) == 0:
         return np.nan, np.nan, np.nan
 
@@ -49,14 +45,12 @@ def rmse_by_vol_quantiles(
     if len(np.unique(vol)) == 1:
         return global_rmse, global_rmse, global_rmse
 
-    # 33%- und 66%-Quantile
     q1, q2 = np.quantile(vol, [0.33, 0.66])
 
     # Falls Quantile kollabieren (z.B. q1 == q2), kein sauberes Split möglich
     if q1 == q2:
         return global_rmse, global_rmse, global_rmse
 
-    # drei Regime über einfache Masken (statt pd.cut, ist robuster)
     low_mask  = vol <= q1
     mid_mask  = (vol > q1) & (vol <= q2)
     high_mask = vol > q2

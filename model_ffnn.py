@@ -1,6 +1,4 @@
 """
-model_ffnn.py
-
 Feedforward Neural Network (FFNN) für Zeitreihenprognosen.
 
 Verwendet:
@@ -90,17 +88,14 @@ def train_ffnn_for_ticker(
         "scaler": prep["scaler"],
         "history": history.history,
 
-        # Zielgrößen (für weitere Analysen, z.B. vol-abhängige Fehler)
         "y_train": y_train,
         "y_val":   y_val,
         "y_test":  y_test,
 
-        # Vorhersagen
         "pred_train": pred_train,
         "pred_val":   pred_val,
         "pred_test":  pred_test,
 
-        # Kernmetriken
         "mae_val": mae(y_val, pred_val),
         "rmse_val": rmse(y_val, pred_val),
         "mae_test": mae(y_test, pred_test),
